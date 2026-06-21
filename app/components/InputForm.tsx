@@ -1,5 +1,7 @@
+// ママ/パパの計算モードを表す型
 type Mode = 'mama' | 'papa'
 
+// modeによってラベルと計算対象が変わる
 type Props = {
   mode: Mode
 }
@@ -24,8 +26,10 @@ export default function InputForm({ mode }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm text-gray-500">
+            {/* パパは自身が産む訳ではないため配偶者の出産予定日に切り替える */}
             {mode === 'mama' ? '出産予定日' : '配偶者の出産予定日'}
           </label>
+          {/* プレースホルダーはYY/MM/DD形式 */}
           <input
             type="text"
             defaultValue="26/11/01"

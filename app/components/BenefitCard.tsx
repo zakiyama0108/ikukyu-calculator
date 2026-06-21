@@ -1,14 +1,17 @@
+// 給付金1件分の表示内容
 type Props = {
-  badge: string
-  badgeBgClass: string
-  badgeTextClass: string
-  name: string
-  amount: number
-  officialName: string
+  badge: string           // カード左上のバッジ文字（例: '産', '67%', '28日'）
+  badgeBgClass: string    // バッジの背景色（Tailwindクラス）
+  badgeTextClass: string  // バッジの文字色（Tailwindクラス）
+  name: string            // 給付金の通称（例: '育児休業給付金'）
+  amount: number          // 支給合計額（円）
+  officialName: string    // 休業の正式名称（例: '産前産後休業（産休）'）
   source: '健康保険' | '雇用保険'
-  period: string
-  rateLabel: string
-  dailyLimitReached: boolean
+  period: string          // 対象期間の文字列（例: '2026/9/21〜2027/1/2（98日）'）
+  rateLabel: string       // 給付率の説明（例: '休業前賃金の67%'）
+  dailyLimitReached: boolean  // 日額上限に達している場合はtrue
+  // 出生後休業支援給付金（+13%上乗せ）の金額
+  // 配偶者が14日以上育休を取得した場合のみ発生するため省略可能
   bonusAmount?: number
 }
 
@@ -25,6 +28,7 @@ export default function BenefitCard({
   dailyLimitReached,
   bonusAmount,
 }: Props) {
+  // 健康保険=青、雇用保険=オレンジで財源を色分けする
   const sourceBgClass = source === '健康保険' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'
 
   return (
@@ -68,6 +72,7 @@ export default function BenefitCard({
         )}
         <div className="flex justify-between">
           <span className="text-gray-400">日額上限</span>
+          {/* 上限に達している場合はオレンジで強調して注意を促す */}
           <span className={dailyLimitReached ? 'text-orange-500 font-medium' : 'text-gray-700'}>
             {dailyLimitReached ? '上限適用' : '未到達'}
           </span>

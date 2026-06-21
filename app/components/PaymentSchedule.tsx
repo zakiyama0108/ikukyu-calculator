@@ -1,11 +1,13 @@
+// 振込スケジュールの1行分を表す型
 type ScheduleItem = {
-  period: string
-  amount: number
-  estimatedPaymentMonth: string
-  benefitLabel: string
-  isFinal?: boolean
+  period: string               // 対象期間の文字列（例: '対象期間：2027/1/3〜2/28（57日）'）
+  amount: number               // 振込予定額（円）
+  estimatedPaymentMonth: string // 振込予定時期（例: '2027年4月中旬ごろ'）
+  benefitLabel: string         // 給付金の種別名（例: '育休給付金67%'）
+  isFinal?: boolean            // 最後の振込かどうか（最終回バッジ表示用）
 }
 
+// 振込スケジュール一覧カード
 type Props = {
   items: ScheduleItem[]
 }

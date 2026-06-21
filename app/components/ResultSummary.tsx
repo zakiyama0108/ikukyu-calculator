@@ -1,9 +1,11 @@
+// 内訳バーの1区分（産休・育休67%・育休50%など）を表す型
 type BreakdownSegment = {
   label: string
   days: number
-  colorClass: string
+  colorClass: string  // Tailwindクラス名（例: 'bg-pink-400'）
 }
 
+// 合計金額・内訳バー・凡例を表示するサマリーカード
 type Props = {
   totalAmount: number
   summaryLabel: string
@@ -11,6 +13,7 @@ type Props = {
 }
 
 export default function ResultSummary({ totalAmount, summaryLabel, segments }: Props) {
+  // 各セグメントの日数合計を使ってバー幅の割合（%）を計算する
   const totalDays = segments.reduce((sum, s) => sum + s.days, 0)
 
   return (
@@ -28,7 +31,7 @@ export default function ResultSummary({ totalAmount, summaryLabel, segments }: P
           <div
             key={seg.label}
             className={seg.colorClass}
-            style={{ width: `${(seg.days / totalDays) * 100}%` }}
+            style={{ width: `${(seg.days / totalDays) * 100}%` }} // 日数比率をそのままバー幅に変換
           />
         ))}
       </div>

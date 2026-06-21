@@ -1,7 +1,9 @@
 'use client'
 
+// ママ/パパの計算モードを表す型
 type Mode = 'mama' | 'papa'
 
+// 現在のモードと切替コールバックを受け取る
 type Props = {
   mode: Mode
   onChange: (mode: Mode) => void

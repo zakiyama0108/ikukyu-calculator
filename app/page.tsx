@@ -7,6 +7,7 @@ import ResultSummary from './components/ResultSummary'
 import BenefitCard from './components/BenefitCard'
 import PaymentSchedule from './components/PaymentSchedule'
 
+// ガワ確認用のダミーデータ（計算ロジック実装後に差し替える）
 const MAMA_RESULT = {
   totalAmount: 3395200,
   summaryLabel: '出産手当金 + 育児休業給付金の合計',
