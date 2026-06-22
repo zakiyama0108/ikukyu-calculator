@@ -1,8 +1,10 @@
 import { defineConfig } from 'vitest/config'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  resolve: {
+    // tsconfig.json の paths エイリアスを Vite ネイティブ機能で解決する
+    tsconfigPaths: true,
+  },
   test: {
     environment: 'node',
   },
