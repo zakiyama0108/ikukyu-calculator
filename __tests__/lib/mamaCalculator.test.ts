@@ -1,0 +1,125 @@
+import { describe, it, expect } from 'vitest'
+import {
+  calcMaternityBenefit,
+  calcMamaChildcare67,
+  calcMamaChildcare50,
+} from '../../app/lib/calculator'
+
+// 出産手当金の日額 = floor(monthlySalary / 30 * 2/3)
+// 上限日額 = 30,887円（標準報酬月額上限 139万円 ÷ 30 × 2/3 の定数）
+describe('出産手当金', () => {
+  // dueDate='2026-11-01' の産前・産後期間:
+  //   startDate = getMaternityStartDate('2026-11-01') = '2026-09-21'（dueDate - 41日）
+  //   endDate   = getPostnatalEndDate('2026-11-01')   = '2026-12-27'（dueDate + 56日）
+  //   日数 = 42 + 56 = 98日
+  it('通常ケース: monthlySalary=320000, dueDate="2026-11-01" → 98日分の金額が返る', () => {
+    // 日額 = floor(320000 / 30 * 2/3) = floor(7111.11) = 7111円
+    // 合計 = 7111 × 98 = 696,878円
+    const result = calcMaternityBenefit({ monthlySalary: 320000, dueDate: '2026-11-01' })
+    expect(result.type).toBe('maternity')
+    expect(result.source).toBe('健康保険')
+    expect(result.days).toBe(98)
+    expect(result.startDate).toBe('2026-09-21')
+    expect(result.endDate).toBe('2026-12-27')
+    expect(result.amount).toBe(696878)
+    expect(result.dailyLimitReached).toBe(false)
+  })
+
+  it('上限ケース: monthlySalary=1500000 → 日額30,887円の上限が適用され dailyLimitReached=true', () => {
+    // 計算日額 = floor(1500000 / 30 * 2/3) = floor(33333.33) = 33333円 → 上限30,887円に切り下げ
+    // 合計 = 30887 × 98 = 3,026,926円
+    const result = calcMaternityBenefit({ monthlySalary: 1500000, dueDate: '2026-11-01' })
+    expect(result.dailyLimitReached).toBe(true)
+    expect(result.amount).toBe(3026926)
+    expect(result.days).toBe(98)
+  })
+})
+
+// 育休前期67%の日額 = floor(min(賃金日額, 16110) × 67/100)
+// 賃金日額 = floor(monthlySalary / 30)
+// 上限: 賃金日額 16,110円（67%後: 10,793円/日）
+describe('育休前期67%', () => {
+  // dueDate='2026-11-01' の育休開始日:
+  //   leaveStart = getMamaLeaveStartDate('2026-11-01') = '2026-12-28'（dueDate + 57日）
+  //   育休180日目 = '2026-12-28' + 179日 = '2027-06-25'
+  it('通常ケース: leaveEndDate="2027-10-31" → 育休1〜180日目の金額が返る', () => {
+    // 賃金日額 = floor(320000/30) = 10666円
+    // 日額67% = floor(10666 × 67/100) = floor(7146.22) = 7146円
+    // 180日分 = 7146 × 180 = 1,286,280円
+    const result = calcMamaChildcare67({
+      monthlySalary: 320000,
+      dueDate: '2026-11-01',
+      leaveEndDate: '2027-10-31',
+    })
+    expect(result.type).toBe('childcare67')
+    expect(result.source).toBe('雇用保険')
+    expect(result.days).toBe(180)
+    expect(result.startDate).toBe('2026-12-28')
+    expect(result.endDate).toBe('2027-06-25')
+    expect(result.amount).toBe(1286280)
+    expect(result.dailyLimitReached).toBe(false)
+  })
+
+  it('上限ケース: monthlySalary=1000000 → 賃金日額上限16,110円が適用されること', () => {
+    // 賃金日額 = floor(1000000/30) = 33333円 → 上限16,110円に切り下げ
+    // 日額67% = floor(16110 × 67/100) = floor(10793.7) = 10793円
+    // 180日分 = 10793 × 180 = 1,942,740円
+    const result = calcMamaChildcare67({
+      monthlySalary: 1000000,
+      dueDate: '2026-11-01',
+      leaveEndDate: '2027-10-31',
+    })
+    expect(result.dailyLimitReached).toBe(true)
+    expect(result.amount).toBe(1942740)
+  })
+})
+
+// 出生後休業支援給付金 +13% は育休1〜28日目に加算（bonusAmount として別出し）
+describe('育休80%（出生後休業支援給付金 bonusAmount）', () => {
+  it('産後57〜84日目（28日間）の bonusAmount が返ること', () => {
+    // 賃金日額 = floor(320000/30) = 10666円
+    // 日額13% = floor(10666 × 13/100) = floor(1386.58) = 1386円
+    // 28日分 = 1386 × 28 = 38,808円
+    const result = calcMamaChildcare67({
+      monthlySalary: 320000,
+      dueDate: '2026-11-01',
+      leaveEndDate: '2027-10-31',
+    })
+    expect(result.bonusAmount).toBe(38808)
+  })
+})
+
+// 育休後期50%の日額 = floor(賃金日額 × 50/100)
+// 育休181日目〜育休終了日が対象。育休が180日以内なら null を返す
+describe('育休後期50%', () => {
+  it('通常ケース: leaveEndDate="2027-10-31" → 育休181日目以降の金額が返る', () => {
+    // 育休181日目 = '2026-12-28' + 180日 = '2027-06-26'
+    // 対象日数: 2027-06-26〜2027-10-31 = 128日
+    //   (Jun:5, Jul:31, Aug:31, Sep:30, Oct:31 = 128日)
+    // 賃金日額 = 10666円
+    // 日額50% = floor(10666 × 50/100) = floor(5333) = 5333円
+    // 合計 = 5333 × 128 = 682,624円
+    const result = calcMamaChildcare50({
+      monthlySalary: 320000,
+      dueDate: '2026-11-01',
+      leaveEndDate: '2027-10-31',
+    })
+    expect(result).not.toBeNull()
+    expect(result!.type).toBe('childcare50')
+    expect(result!.source).toBe('雇用保険')
+    expect(result!.startDate).toBe('2027-06-26')
+    expect(result!.endDate).toBe('2027-10-31')
+    expect(result!.days).toBe(128)
+    expect(result!.amount).toBe(682624)
+  })
+
+  it('育休が180日以内の場合 → null が返る', () => {
+    // leaveEndDate='2027-05-31': 育休期間 2026-12-28〜2027-05-31 = 155日 (< 180日)
+    const result = calcMamaChildcare50({
+      monthlySalary: 320000,
+      dueDate: '2026-11-01',
+      leaveEndDate: '2027-05-31',
+    })
+    expect(result).toBeNull()
+  })
+})
