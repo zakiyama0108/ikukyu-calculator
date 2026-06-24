@@ -1,5 +1,5 @@
 import type { BenefitItem } from './types'
-import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate } from './dateUtils'
+import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, parseDate, formatDate, addDays } from './dateUtils'
 
 // 上限値（2025年8月1日〜2026年7月31日適用）
 // 雇用保険の賃金日額上限。超過時は本値にキャップして給付を計算する
@@ -16,23 +16,6 @@ type MamaLeaveInput = {
   monthlySalary: number
   dueDate: string
   leaveEndDate: string
-}
-
-// タイムゾーンの影響を排除するため UTC で日付演算を行う
-function parseDate(dateStr: string): Date {
-  const [y, m, d] = dateStr.split('-').map(Number)
-  return new Date(Date.UTC(y, m - 1, d))
-}
-
-function formatDate(date: Date): string {
-  const y = date.getUTCFullYear()
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0')
-  const d = String(date.getUTCDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
-}
-
-function addDays(date: Date, days: number): Date {
-  return new Date(date.getTime() + days * 86400 * 1000)
 }
 
 // 対象期間の日数を返す（startDate・endDate の両端を含む）
