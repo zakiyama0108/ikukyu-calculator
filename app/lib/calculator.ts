@@ -1,5 +1,5 @@
-import type { BenefitItem } from './types'
-import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, getPapaLeaveStartDate, parseDate, formatDate, addDays } from './dateUtils'
+import type { BenefitItem, BreakdownBarSegment, PaymentSchedule, Mode } from './types'
+import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, getPapaLeaveStartDate, parseDate, formatDate, addDays, splitIntoTwoMonthBlocks } from './dateUtils'
 
 // 上限値（2025年8月1日〜2026年7月31日適用）
 // 雇用保険の賃金日額上限。超過時は本値にキャップして給付を計算する
@@ -215,4 +215,97 @@ export function calcMamaChildcare50(input: MamaLeaveInput): BenefitItem | null {
     amount: daily50 * days,
     dailyLimitReached,
   }
+}
+
+// ── 共通出力データ生成 ──────────────────────────────────────────────────────────
+
+// 合計金額のラベルを返す（モードによって異なる）
+export function calcSummaryLabel(mode: Mode): string {
+  return mode === 'mama'
+    ? '出産手当金 + 育児休業給付金の合計'
+    : '出生時育児休業給付金 + 育児休業給付金の合計'
+}
+
+// 期間内訳バーのセグメント配列を返す（モード・dueDate・leaveEndDate から生成）
+export function calcBreakdownBar(input: { mode: Mode; dueDate: string; leaveEndDate: string }): BreakdownBarSegment[] {
+  const { mode, dueDate, leaveEndDate } = input
+
+  if (mode === 'mama') {
+    const leaveStartDate = getMamaLeaveStartDate(dueDate)
+    // 育休180日目
+    const day180 = formatDate(addDays(parseDate(leaveStartDate), 179))
+    const childcare67EndDate = day180 < leaveEndDate ? day180 : leaveEndDate
+    const childcare67Days = countDays(leaveStartDate, childcare67EndDate)
+
+    const segments: BreakdownBarSegment[] = [
+      { label: '産休', days: 98, colorClass: 'bg-rose-400' },
+      { label: '育休（前期）', days: childcare67Days, colorClass: 'bg-teal-400' },
+    ]
+
+    // 育休181日目
+    const day181 = formatDate(addDays(parseDate(leaveStartDate), 180))
+    if (day181 <= leaveEndDate) {
+      segments.push({ label: '育休（後期）', days: countDays(day181, leaveEndDate), colorClass: 'bg-sky-400' })
+    }
+
+    return segments
+  } else {
+    // パパ: 産後パパ育休（28日）+ 通常育休67% + 通常育休50%
+    const paternityDays = 28
+    // 総育休180日目 = dueDate + 179日
+    const day180 = formatDate(addDays(parseDate(dueDate), 179))
+    const childcare67EndDate = day180 < leaveEndDate ? day180 : leaveEndDate
+    const leaveStartDate = getPapaLeaveStartDate(dueDate)
+    const childcare67Days = countDays(leaveStartDate, childcare67EndDate)
+
+    const segments: BreakdownBarSegment[] = [
+      { label: '産後パパ育休', days: paternityDays, colorClass: 'bg-orange-400' },
+      { label: '育休（前期）', days: childcare67Days, colorClass: 'bg-teal-400' },
+    ]
+
+    // 総育休181日目 = dueDate + 180日
+    const day181 = formatDate(addDays(parseDate(dueDate), 180))
+    if (day181 <= leaveEndDate) {
+      segments.push({ label: '育休（後期）', days: countDays(day181, leaveEndDate), colorClass: 'bg-sky-400' })
+    }
+
+    return segments
+  }
+}
+
+// 振込スケジュール一覧を返す（BenefitItem[] を2ヶ月ブロックに分割して生成）
+// 最後のブロックには isFinal: true を付与する
+// 振込予定月 = 対象期間の終了月 + 2ヶ月（雇用保険・健保ともに統一）
+export function calcPaymentSchedules(benefits: BenefitItem[]): PaymentSchedule[] {
+  const schedules: PaymentSchedule[] = []
+
+  for (const benefit of benefits) {
+    const blocks = splitIntoTwoMonthBlocks(benefit.startDate, benefit.endDate)
+    const dailyRate = Math.floor(benefit.amount / benefit.days)
+
+    for (const block of blocks) {
+      const blockDays = countDays(block.startDate, block.endDate)
+      const endDate = parseDate(block.endDate)
+      // 振込予定月 = 終了月 + 2ヶ月
+      const totalMonths = endDate.getUTCMonth() + 2
+      const paymentYear = endDate.getUTCFullYear() + Math.floor(totalMonths / 12)
+      const paymentMonth = (totalMonths % 12) + 1
+      const estimatedPaymentMonth = `${paymentYear}年${paymentMonth}月中旬ごろ`
+
+      schedules.push({
+        startDate: block.startDate,
+        endDate: block.endDate,
+        days: blockDays,
+        amount: dailyRate * blockDays,
+        estimatedPaymentMonth,
+        benefitType: benefit.type,
+      })
+    }
+  }
+
+  if (schedules.length > 0) {
+    schedules[schedules.length - 1].isFinal = true
+  }
+
+  return schedules
 }
