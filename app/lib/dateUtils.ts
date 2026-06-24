@@ -5,12 +5,12 @@ type DateRange = {
 }
 
 // タイムゾーンの影響を排除するため、日付の演算はすべて UTC で行う
-function parseDate(dateStr: string): Date {
+export function parseDate(dateStr: string): Date {
   const [year, month, day] = dateStr.split('-').map(Number)
   return new Date(Date.UTC(year, month - 1, day))
 }
 
-function formatDate(date: Date): string {
+export function formatDate(date: Date): string {
   const y = date.getUTCFullYear()
   const m = String(date.getUTCMonth() + 1).padStart(2, '0')
   const d = String(date.getUTCDate()).padStart(2, '0')
@@ -18,7 +18,7 @@ function formatDate(date: Date): string {
 }
 
 // days に負の値を渡すと減算になる
-function addDays(date: Date, days: number): Date {
+export function addDays(date: Date, days: number): Date {
   return new Date(date.getTime() + days * 86400 * 1000)
 }
 
