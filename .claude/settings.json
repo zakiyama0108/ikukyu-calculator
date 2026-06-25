@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(gh pr create --title 'feat\\(output\\): 共通出力データ生成のRed/Green/Refactorフェーズ完了' --body ' *)",
+      "Bash(xargs cat)",
+      "Bash(npm install *)"
+    ]
+  }
+}

@@ -1,18 +1,11 @@
-// 振込スケジュールの1行分を表す型
-type ScheduleItem = {
-  period: string               // 対象期間の文字列（例: '対象期間：2027/1/3〜2/28（57日）'）
-  amount: number               // 振込予定額（円）
-  estimatedPaymentMonth: string // 振込予定時期（例: '2027年4月中旬ごろ'）
-  benefitLabel: string         // 給付金の種別名（例: '育休給付金67%'）
-  isFinal?: boolean            // 最後の振込かどうか（最終回バッジ表示用）
-}
+import type { PaymentSchedule } from '../lib/types'
 
-// 振込スケジュール一覧カード
 type Props = {
-  items: ScheduleItem[]
+  schedules: PaymentSchedule[]
 }
 
-export default function PaymentSchedule({ items }: Props) {
+// デフォルトエクスポートは PaymentScheduleList にして types.ts の PaymentSchedule 型と名前が衝突しないようにする
+export default function PaymentScheduleList({ schedules }: Props) {
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between">
@@ -21,24 +14,24 @@ export default function PaymentSchedule({ items }: Props) {
       </div>
 
       <div className="space-y-3">
-        {items.map((item, i) => (
+        {schedules.map((s, i) => (
           <div key={i} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm space-y-2">
             <div className="flex items-start justify-between">
-              <span className="text-xs text-gray-500">{item.period}</span>
-              <span className="text-base font-bold">{item.amount.toLocaleString()}円</span>
+              <span className="text-xs text-gray-500">{s.startDate}〜{s.endDate}（{s.days}日）</span>
+              <span className="text-base font-bold">{s.amount.toLocaleString()}円</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                  {item.benefitLabel}
+                  {s.benefitType}
                 </span>
-                {item.isFinal && (
+                {s.isFinal && (
                   <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600 font-medium">
                     最終振込
                   </span>
                 )}
               </div>
-              <span className="text-xs text-gray-400">振込予定 {item.estimatedPaymentMonth}</span>
+              <span className="text-xs text-gray-400">振込予定 {s.estimatedPaymentMonth}</span>
             </div>
           </div>
         ))}

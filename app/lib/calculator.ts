@@ -1,4 +1,4 @@
-import type { BenefitItem, BreakdownBarSegment, PaymentSchedule, Mode } from './types'
+import type { BenefitItem, BreakdownBarSegment, PaymentSchedule, Mode, CalculatorInput, CalculatorResult } from './types'
 import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, getPapaLeaveStartDate, parseDate, formatDate, addDays, splitIntoTwoMonthBlocks } from './dateUtils'
 
 // 上限値（2025年8月1日〜2026年7月31日適用）
@@ -308,4 +308,34 @@ export function calcPaymentSchedules(benefits: BenefitItem[]): PaymentSchedule[]
   }
 
   return schedules
+}
+
+// 全給付金の計算結果をまとめて返す（CalculatorInput → CalculatorResult）
+export function calcResult(input: CalculatorInput): CalculatorResult {
+  const { mode, monthlySalary, dueDate, leaveEndDate } = input
+
+  let benefits: BenefitItem[]
+
+  if (mode === 'mama') {
+    const maternity = calcMaternityBenefit({ monthlySalary, dueDate })
+    const childcare67 = calcMamaChildcare67({ monthlySalary, dueDate, leaveEndDate })
+    const childcare50 = calcMamaChildcare50({ monthlySalary, dueDate, leaveEndDate })
+    benefits = [maternity, childcare67, ...(childcare50 ? [childcare50] : [])]
+  } else {
+    const paternity = calcPaternityBenefit({ monthlySalary, dueDate })
+    const childcare67 = calcPapaChildcare67({ monthlySalary, dueDate, leaveEndDate })
+    const childcare50 = calcPapaChildcare50({ monthlySalary, dueDate, leaveEndDate })
+    benefits = [paternity, childcare67, ...(childcare50 ? [childcare50] : [])]
+  }
+
+  // 給付金合計 = 基本額 + 出生後休業支援給付金（+13%）の合算
+  const totalAmount = benefits.reduce((sum, b) => sum + b.amount + (b.bonusAmount ?? 0), 0)
+
+  return {
+    totalAmount,
+    summaryLabel: calcSummaryLabel(mode),
+    breakdownBar: calcBreakdownBar({ mode, dueDate, leaveEndDate }),
+    benefits,
+    paymentSchedules: calcPaymentSchedules(benefits),
+  }
 }
