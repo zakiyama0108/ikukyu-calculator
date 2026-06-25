@@ -39,9 +39,8 @@ export default function BenefitCard({ benefit, isNotApplicable = false }: Props)
         <span className="text-base font-bold">{amount.toLocaleString()}円</span>
       </div>
 
-      {/* お休み名・財源バッジ */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500">お休み名：{officialName}</span>
+      {/* 財源バッジ */}
+      <div className="flex items-center justify-end">
         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${sourceBgClass}`}>
           {source}から支給
         </span>
