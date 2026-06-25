@@ -23,7 +23,7 @@ export function addDays(date: Date, days: number): Date {
 }
 
 // 月を超えた分は翌月に繰り越す（例: 1/31 + 1ヶ月 = 3/2 or 3/3）
-function addMonths(date: Date, months: number): Date {
+export function addMonths(date: Date, months: number): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, date.getUTCDate()))
 }
 

@@ -1,5 +1,5 @@
 import type { BenefitItem, BreakdownBarSegment, PaymentSchedule, Mode, CalculatorInput, CalculatorResult } from './types'
-import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, getPapaLeaveStartDate, parseDate, formatDate, addDays, splitIntoTwoMonthBlocks } from './dateUtils'
+import { getMaternityStartDate, getPostnatalEndDate, getMamaLeaveStartDate, getPapaLeaveStartDate, parseDate, formatDate, addDays, addMonths, splitIntoTwoMonthBlocks } from './dateUtils'
 
 // 上限値（2025年8月1日〜2026年7月31日適用）
 // 雇用保険の賃金日額上限。超過時は本値にキャップして給付を計算する
@@ -161,14 +161,8 @@ export function calcPapaChildcare67(input: PapaLeaveInput): BenefitItem {
   }
 }
 
-// 育児休業給付金（育休後期・50%）を計算して返す（パパ専用・雇用保険）
-// 対象期間: 総育休181日目（dueDate+180）〜 leaveEndDate
-// 総育休が180日以内の場合は null を返す
-export function calcPapaChildcare50(input: PapaLeaveInput): BenefitItem | null {
-  const { monthlySalary, dueDate, leaveEndDate } = input
-
-  // 総育休181日目 = dueDate + 180日
-  const day181 = formatDate(addDays(parseDate(dueDate), 180))
+// 育休後期50%の共通計算ロジック。day181（181日目の日付）を呼び出し元が算出して渡す
+function calcChildcare50Core(monthlySalary: number, day181: string, leaveEndDate: string): BenefitItem | null {
   if (day181 > leaveEndDate) return null
 
   const days = countDays(day181, leaveEndDate)
@@ -188,33 +182,23 @@ export function calcPapaChildcare50(input: PapaLeaveInput): BenefitItem | null {
   }
 }
 
+// 育児休業給付金（育休後期・50%）を計算して返す（パパ専用・雇用保険）
+// 総育休181日目（dueDate+180）から leaveEndDate まで。180日以内なら null
+export function calcPapaChildcare50(input: PapaLeaveInput): BenefitItem | null {
+  // 総育休181日目 = dueDate + 180日（産後パパ育休28日を通算した境界）
+  const day181 = formatDate(addDays(parseDate(input.dueDate), 180))
+  return calcChildcare50Core(input.monthlySalary, day181, input.leaveEndDate)
+}
+
 // ── ママ専用（後期）────────────────────────────────────────────────────────────
 
 // 育児休業給付金（育休後期・50%）を計算して返す（ママ専用・雇用保険）
-// 対象期間: 育休181日目〜leaveEndDate。育休が180日以内の場合は null を返す
+// 育休181日目（leaveStart+180日）から leaveEndDate まで。180日以内なら null
 export function calcMamaChildcare50(input: MamaLeaveInput): BenefitItem | null {
-  const { monthlySalary, dueDate, leaveEndDate } = input
-  const leaveStartDate = getMamaLeaveStartDate(dueDate)
-
+  const leaveStartDate = getMamaLeaveStartDate(input.dueDate)
   // 育休181日目 = leaveStart + 180日
   const day181 = formatDate(addDays(parseDate(leaveStartDate), 180))
-  if (day181 > leaveEndDate) return null
-
-  const days = countDays(day181, leaveEndDate)
-  const { effectiveWageDaily, dailyLimitReached } = calcEmploymentWageDaily(monthlySalary)
-  const daily50 = Math.floor(effectiveWageDaily * 50 / 100)
-
-  return {
-    type: 'childcare50',
-    officialName: '育児休業（育休）181日以降',
-    source: '雇用保険',
-    startDate: day181,
-    endDate: leaveEndDate,
-    days,
-    rateLabel: '休業前賃金の50%',
-    amount: daily50 * days,
-    dailyLimitReached,
-  }
+  return calcChildcare50Core(input.monthlySalary, day181, input.leaveEndDate)
 }
 
 // ── 共通出力データ生成 ──────────────────────────────────────────────────────────
@@ -285,12 +269,9 @@ export function calcPaymentSchedules(benefits: BenefitItem[]): PaymentSchedule[]
 
     for (const block of blocks) {
       const blockDays = countDays(block.startDate, block.endDate)
-      const endDate = parseDate(block.endDate)
       // 振込予定月 = 終了月 + 2ヶ月
-      const totalMonths = endDate.getUTCMonth() + 2
-      const paymentYear = endDate.getUTCFullYear() + Math.floor(totalMonths / 12)
-      const paymentMonth = (totalMonths % 12) + 1
-      const estimatedPaymentMonth = `${paymentYear}年${paymentMonth}月中旬ごろ`
+      const paymentDate = addMonths(parseDate(block.endDate), 2)
+      const estimatedPaymentMonth = `${paymentDate.getUTCFullYear()}年${paymentDate.getUTCMonth() + 1}月中旬ごろ`
 
       schedules.push({
         startDate: block.startDate,

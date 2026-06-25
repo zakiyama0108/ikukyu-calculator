@@ -14,12 +14,9 @@ export default function InputForm({ mode, onSubmit }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onSubmit({
-      mode,
-      monthlySalary: Number(monthlySalary.replace(/,/g, '')),
-      dueDate,
-      leaveEndDate,
-    })
+    const salary = Number(monthlySalary.replace(/,/g, ''))
+    if (!salary || salary <= 0 || !dueDate || !leaveEndDate) return
+    onSubmit({ mode, monthlySalary: salary, dueDate, leaveEndDate })
   }
 
   return (
@@ -49,10 +46,9 @@ export default function InputForm({ mode, onSubmit }: Props) {
           </label>
           <input
             id="dueDate"
-            type="text"
+            type="date"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
-            placeholder="2026-11-01"
             className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
           />
         </div>
@@ -60,10 +56,9 @@ export default function InputForm({ mode, onSubmit }: Props) {
           <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
           <input
             id="leaveEndDate"
-            type="text"
+            type="date"
             value={leaveEndDate}
             onChange={e => setLeaveEndDate(e.target.value)}
-            placeholder="2027-10-31"
             className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
           />
         </div>
