@@ -35,7 +35,8 @@ describe('BreakdownBarSegment[] 生成', () => {
   })
 
   it('papa（育休180日以内）: 産後パパ育休・育休67%の2区分が返ること', () => {
-    const result = calcBreakdownBar({ mode: 'papa', dueDate: '2026-11-01', leaveEndDate: '2027-04-29' })
+    // dueDate=出産予定日, leaveStartDate=育休開始日（同日 = 出産当日から休む）
+    const result = calcBreakdownBar({ mode: 'papa', dueDate: '2026-11-01', leaveStartDate: '2026-11-01', leaveEndDate: '2027-04-29' })
     expect(result).toHaveLength(2)
     expect(result[0].label).toBe('産後パパ育休')
     expect(result[0].days).toBe(28)

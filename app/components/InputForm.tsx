@@ -10,13 +10,19 @@ type Props = {
 export default function InputForm({ mode, onSubmit }: Props) {
   const [monthlySalary, setMonthlySalary] = useState('')
   const [dueDate, setDueDate] = useState('')
+  const [leaveStartDate, setLeaveStartDate] = useState('')
   const [leaveEndDate, setLeaveEndDate] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const salary = Number(monthlySalary.replace(/,/g, ''))
     if (!salary || salary <= 0 || !dueDate || !leaveEndDate) return
-    onSubmit({ mode, monthlySalary: salary, dueDate, leaveEndDate })
+    if (mode === 'papa' && !leaveStartDate) return
+    if (mode === 'mama') {
+      onSubmit({ mode, monthlySalary: salary, dueDate, leaveEndDate })
+    } else {
+      onSubmit({ mode, monthlySalary: salary, dueDate, leaveStartDate, leaveEndDate })
+    }
   }
 
   return (
@@ -38,31 +44,65 @@ export default function InputForm({ mode, onSubmit }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label htmlFor="dueDate" className="block text-sm text-gray-500">
-            {/* パパは自身が産む訳ではないため配偶者の出産予定日に切り替える */}
-            {mode === 'mama' ? '出産予定日' : '配偶者の出産予定日'}
-          </label>
-          <input
-            id="dueDate"
-            type="date"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
-          />
+      {mode === 'mama' ? (
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="dueDate" className="block text-sm text-gray-500">出産予定日</label>
+            <input
+              id="dueDate"
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+            />
+          </div>
+          <div>
+            <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
+            <input
+              id="leaveEndDate"
+              type="date"
+              value={leaveEndDate}
+              onChange={e => setLeaveEndDate(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+            />
+          </div>
         </div>
-        <div>
-          <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
-          <input
-            id="leaveEndDate"
-            type="date"
-            value={leaveEndDate}
-            onChange={e => setLeaveEndDate(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
-          />
+      ) : (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="dueDate" className="block text-sm text-gray-500">出産予定日</label>
+              <input
+                id="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={e => setDueDate(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+              />
+            </div>
+            <div>
+              <label htmlFor="leaveStartDate" className="block text-sm text-gray-500">育休開始日</label>
+              <input
+                id="leaveStartDate"
+                type="date"
+                value={leaveStartDate}
+                onChange={e => setLeaveStartDate(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
+            <input
+              id="leaveEndDate"
+              type="date"
+              value={leaveEndDate}
+              onChange={e => setLeaveEndDate(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <button type="submit" className="w-full rounded-xl bg-orange-500 py-4 text-base font-medium text-white">
         計算する
