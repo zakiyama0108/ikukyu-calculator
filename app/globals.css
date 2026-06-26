@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@layer components {
+  .section-heading {
+    @apply text-base font-bold text-gray-900 mb-2.5 pl-3 border-l-[3px] border-blue-500;
+  }
+  .body-text {
+    @apply text-sm text-gray-600 mb-3;
+  }
+}
+
 body {
   background: #ffffff;
   color: #171717;
