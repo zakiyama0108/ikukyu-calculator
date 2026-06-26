@@ -28,6 +28,7 @@ describe('上限到達ケース（月給483,300円超）', () => {
       mode: 'papa',
       monthlySalary: 500000,
       dueDate: '2026-11-01',
+      leaveStartDate: '2026-11-01',
       leaveEndDate: '2027-04-29',
     })
     expect(result.benefits.every(b => b.dailyLimitReached)).toBe(true)
@@ -50,12 +51,13 @@ describe('育休が極端に短いケース（28日未満）', () => {
     expect(result.benefits.find(b => b.type === 'childcare50')).toBeUndefined()
   })
 
-  it('パパ: 産後パパ育休のみ（leaveEndDate = paternityEndDate）→ childcare67 が含まれないこと', () => {
-    // dueDate + 27 = 2026-11-28 = 産後パパ育休終了日と同じ = 育休なし
+  it('パパ: 産後パパ育休のみ（leaveEndDate = leaveStartDate+27）→ childcare67 が含まれないこと', () => {
+    // leaveStartDate + 27 = '2026-11-28' = 産後パパ育休終了日と同じ = 通常育休なし
     const result = calcResult({
       mode: 'papa',
       monthlySalary: 380000,
       dueDate: '2026-11-01',
+      leaveStartDate: '2026-11-01',
       leaveEndDate: '2026-11-28',
     })
     expect(result.benefits.find(b => b.type === 'paternity')).toBeDefined()
@@ -65,17 +67,57 @@ describe('育休が極端に短いケース（28日未満）', () => {
 })
 
 describe('パパの育休合計が180日超のケース', () => {
-  it('leaveEndDate が dueDate+180日超 → childcare50 が発生すること', () => {
-    // dueDate + 180 = 2027-04-30 が childcare50 の開始日
+  it('leaveEndDate が leaveStartDate+180日超 → childcare50 が発生すること', () => {
+    // leaveStartDate + 180 = '2027-04-30' が childcare50 の開始日
     const result = calcResult({
       mode: 'papa',
       monthlySalary: 380000,
       dueDate: '2026-11-01',
+      leaveStartDate: '2026-11-01',
       leaveEndDate: '2027-06-30',
     })
     const c50 = result.benefits.find(b => b.type === 'childcare50')
     expect(c50).toBeDefined()
     expect(c50!.startDate).toBe('2027-04-30')
     expect(c50!.endDate).toBe('2027-06-30')
+  })
+})
+
+describe('パパの育休開始日が8週間（56日）を超えるケース', () => {
+  it('leaveStartDate が dueDate+57日以降 → 産後パパ育休なし・通常育休のみ', () => {
+    // dueDate = '2026-11-01', leaveStartDate = '2027-01-01'（61日後）
+    // 8週間の終了日 = dueDate+56 = '2026-12-27'
+    // leaveStartDate='2027-01-01' > '2026-12-27' → paternityDays=0
+    const result = calcResult({
+      mode: 'papa',
+      monthlySalary: 380000,
+      dueDate: '2026-11-01',
+      leaveStartDate: '2027-01-01',
+      leaveEndDate: '2027-06-30',
+    })
+    expect(result.benefits.find(b => b.type === 'paternity')).toBeUndefined()
+    expect(result.benefits.find(b => b.type === 'childcare67')).toBeDefined()
+    // childcare67 は leaveStartDate から始まる
+    expect(result.benefits.find(b => b.type === 'childcare67')!.startDate).toBe('2027-01-01')
+  })
+
+  it('leaveStartDate が 8週間内の終盤（残6日）→ paternityDays=6 になること', () => {
+    // dueDate = '2026-11-01', leaveStartDate = '2026-12-22'（dueDate+51日）
+    // paternityWindowEnd = dueDate+56 = '2026-12-27'
+    // remainingWindow = countDays('2026-12-22', '2026-12-27') = 6日
+    // paternityDays = min(28, 6, 総日数) = 6
+    const result = calcResult({
+      mode: 'papa',
+      monthlySalary: 380000,
+      dueDate: '2026-11-01',
+      leaveStartDate: '2026-12-22',
+      leaveEndDate: '2027-06-30',
+    })
+    const paternity = result.benefits.find(b => b.type === 'paternity')
+    expect(paternity).toBeDefined()
+    expect(paternity!.days).toBe(6)
+    // 通常育休は leaveStartDate+6 = '2026-12-28' から始まる
+    const c67 = result.benefits.find(b => b.type === 'childcare67')
+    expect(c67!.startDate).toBe('2026-12-28')
   })
 })
