@@ -1,7 +1,14 @@
-import type { PaymentSchedule } from '../lib/types'
+import type { BenefitType, PaymentSchedule } from '../lib/types'
 
 type Props = {
   schedules: PaymentSchedule[]
+}
+
+const BENEFIT_LABEL: Record<BenefitType, string> = {
+  maternity:   '出産手当金',
+  paternity:   '出生時育児休業給付金',
+  childcare67: '育休給付金（67%）',
+  childcare50: '育休給付金（50%）',
 }
 
 // デフォルトエクスポートは PaymentScheduleList にして types.ts の PaymentSchedule 型と名前が衝突しないようにする
@@ -23,7 +30,7 @@ export default function PaymentScheduleList({ schedules }: Props) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                  {s.benefitType}
+                  {BENEFIT_LABEL[s.benefitType]}
                 </span>
                 {s.isFinal && (
                   <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600 font-medium">
