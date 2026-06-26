@@ -3,7 +3,7 @@ export type Mode = 'mama' | 'papa'
 export type CalculatorInput = {
   mode: Mode
   monthlySalary: number    // 月給・円（手取り前の総支給額）
-  dueDate: string          // 出産予定日（YYYY-MM-DD）
+  dueDate: string          // ママ: 出産予定日 / パパ: 育休開始日（産後パパ育休の初日）（YYYY-MM-DD）
   leaveEndDate: string     // 育休終了予定日（YYYY-MM-DD）
 }
 

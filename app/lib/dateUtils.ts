@@ -50,12 +50,14 @@ export function getMamaLeaveStartDate(dueDate: string): string {
 // ── パパ専用 ─────────────────────────────────────────
 
 // 産後パパ育休の終了日を返す（パパ専用）
+// dueDate = 育休開始日（産後パパ育休の初日）
 // 産後パパ育休は最大28日間 → 終了日 = dueDate + 27日
 export function getPapaPaternityLeaveEndDate(dueDate: string): string {
   return formatDate(addDays(parseDate(dueDate), 27))
 }
 
 // パパの通常育休開始日を返す（パパ専用）
+// dueDate = 育休開始日（産後パパ育休の初日）
 // 産後パパ育休（28日）終了の翌日 = dueDate + 28日
 export function getPapaLeaveStartDate(dueDate: string): string {
   return formatDate(addDays(parseDate(dueDate), 28))

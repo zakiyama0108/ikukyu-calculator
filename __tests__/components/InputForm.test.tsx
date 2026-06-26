@@ -20,9 +20,9 @@ describe('InputForm', () => {
     })
   })
 
-  it('mode: papa のとき出産予定日ラベルが「配偶者の出産予定日」になること', () => {
+  it('mode: papa のとき日付ラベルが「育休開始日」になること', () => {
     render(<InputForm mode="papa" onSubmit={vi.fn()} />)
-    expect(screen.getByLabelText('配偶者の出産予定日')).toBeDefined()
+    expect(screen.getByLabelText('育休開始日')).toBeDefined()
   })
 
   it('月給が未入力のとき onSubmit が呼ばれないこと', () => {

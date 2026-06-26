@@ -108,6 +108,7 @@ export function calcMamaChildcare67(input: MamaLeaveInput): BenefitItem {
 // ── パパ専用 ─────────────────────────────────────────────────────────────────
 
 // 出生時育児休業給付金を計算して返す（パパ専用・雇用保険）
+// dueDate = 育休開始日（産後パパ育休の初日）
 // 対象期間: dueDate 〜 dueDate + (paternityDays - 1)（最大28日）
 // bonusAmount に +13% の出生後休業支援給付金を含む
 export function calcPaternityBenefit(input: PaternityInput): BenefitItem {
@@ -134,6 +135,7 @@ export function calcPaternityBenefit(input: PaternityInput): BenefitItem {
 }
 
 // 育児休業給付金（育休前期・67%）を計算して返す（パパ専用・雇用保険）
+// dueDate = 育休開始日（産後パパ育休の初日）
 // 対象期間: 通常育休1日目（dueDate+28）〜 総育休180日目（dueDate+179）
 // 産後パパ育休のみ取得（leaveEndDate ≤ dueDate+27）の場合は null を返す
 export function calcPapaChildcare67(input: PapaLeaveInput): BenefitItem | null {
@@ -186,6 +188,7 @@ function calcChildcare50Core(monthlySalary: number, day181: string, leaveEndDate
 }
 
 // 育児休業給付金（育休後期・50%）を計算して返す（パパ専用・雇用保険）
+// dueDate = 育休開始日（産後パパ育休の初日）
 // 総育休181日目（dueDate+180）から leaveEndDate まで。180日以内なら null
 export function calcPapaChildcare50(input: PapaLeaveInput): BenefitItem | null {
   // 総育休181日目 = dueDate + 180日（産後パパ育休28日を通算した境界）
