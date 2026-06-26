@@ -286,17 +286,20 @@ export function calcPaymentSchedules(benefits: BenefitItem[]): PaymentSchedule[]
     const blocks = splitIntoTwoMonthBlocks(benefit.startDate, benefit.endDate)
     const dailyRate = Math.floor(benefit.amount / benefit.days)
 
-    for (const block of blocks) {
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i]
       const blockDays = countDays(block.startDate, block.endDate)
       // 振込予定月 = 終了月 + 2ヶ月
       const paymentDate = addMonths(parseDate(block.endDate), 2)
       const estimatedPaymentMonth = `${paymentDate.getUTCFullYear()}年${paymentDate.getUTCMonth() + 1}月中旬ごろ`
+      // 出生後休業支援給付金（bonusAmount）は育児休業給付金と同時に支払われるため最初のブロックに加算
+      const bonusForBlock = i === 0 ? (benefit.bonusAmount ?? 0) : 0
 
       schedules.push({
         startDate: block.startDate,
         endDate: block.endDate,
         days: blockDays,
-        amount: dailyRate * blockDays,
+        amount: dailyRate * blockDays + bonusForBlock,
         estimatedPaymentMonth,
         benefitType: benefit.type,
       })
