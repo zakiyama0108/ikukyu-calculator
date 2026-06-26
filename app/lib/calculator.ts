@@ -135,8 +135,8 @@ export function calcPaternityBenefit(input: PaternityInput): BenefitItem {
 
 // 育児休業給付金（育休前期・67%）を計算して返す（パパ専用・雇用保険）
 // 対象期間: 通常育休1日目（dueDate+28）〜 総育休180日目（dueDate+179）
-// 総育休の日数は産後パパ育休（28日）を含む通算で判定する
-export function calcPapaChildcare67(input: PapaLeaveInput): BenefitItem {
+// 産後パパ育休のみ取得（leaveEndDate ≤ dueDate+27）の場合は null を返す
+export function calcPapaChildcare67(input: PapaLeaveInput): BenefitItem | null {
   const { monthlySalary, dueDate, leaveEndDate } = input
   const startDate = getPapaLeaveStartDate(dueDate)
 
@@ -144,6 +144,9 @@ export function calcPapaChildcare67(input: PapaLeaveInput): BenefitItem {
   const day180 = formatDate(addDays(parseDate(dueDate), 179))
   const endDate = day180 < leaveEndDate ? day180 : leaveEndDate
   const days = countDays(startDate, endDate)
+
+  // leaveEndDate が産後パパ育休期間内（dueDate+27以前）の場合は通常育休なし
+  if (days <= 0) return null
 
   const { effectiveWageDaily, dailyLimitReached } = calcEmploymentWageDaily(monthlySalary)
   const daily67 = Math.floor(effectiveWageDaily * 67 / 100)
@@ -306,7 +309,7 @@ export function calcResult(input: CalculatorInput): CalculatorResult {
     const paternity = calcPaternityBenefit({ monthlySalary, dueDate })
     const childcare67 = calcPapaChildcare67({ monthlySalary, dueDate, leaveEndDate })
     const childcare50 = calcPapaChildcare50({ monthlySalary, dueDate, leaveEndDate })
-    benefits = [paternity, childcare67, ...(childcare50 ? [childcare50] : [])]
+    benefits = [paternity, ...(childcare67 ? [childcare67] : []), ...(childcare50 ? [childcare50] : [])]
   }
 
   // 給付金合計 = 基本額 + 出生後休業支援給付金（+13%）の合算
