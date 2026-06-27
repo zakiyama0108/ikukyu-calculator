@@ -77,4 +77,20 @@ describe('PaymentSchedule[] 生成', () => {
     const last = schedules[schedules.length - 1]
     expect(last.isFinal).toBe(true)
   })
+
+  it('bonusAmount は最初のブロックの amount に上乗せされること', () => {
+    // 出生後休業支援給付金は育児休業給付金と同時に支払われるため最初のブロックに加算する
+    // dailyRate = floor(1286280 / 180) = 7146
+    // Block 1: '2026-12-28' ~ '2027-02-27' = 62日 → 7146×62 + 38808 = 481,860
+    // Block 2: '2027-02-28' ~ '2027-04-27' = 59日 → 7146×59 = 421,614（bonus なし）
+    const schedules = calcPaymentSchedules([childcare67])
+    expect(schedules[0].amount).toBe(7146 * 62 + 38808)
+    expect(schedules[1].amount).toBe(7146 * 59)
+  })
+
+  it('bonusAmount がない給付は amount が変化しないこと', () => {
+    const noBonus: BenefitItem = { ...childcare67, bonusAmount: undefined }
+    const schedules = calcPaymentSchedules([noBonus])
+    expect(schedules[0].amount).toBe(7146 * 62)
+  })
 })
