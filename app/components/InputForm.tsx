@@ -69,17 +69,17 @@ export default function InputForm({ mode, onSubmit }: Props) {
         </div>
       ) : (
         <div className="space-y-3">
+          <div>
+            <label htmlFor="dueDate" className="block text-sm text-gray-500">出産予定日</label>
+            <input
+              id="dueDate"
+              type="date"
+              value={dueDate}
+              onChange={e => setDueDate(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="dueDate" className="block text-sm text-gray-500">出産予定日</label>
-              <input
-                id="dueDate"
-                type="date"
-                value={dueDate}
-                onChange={e => setDueDate(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
-              />
-            </div>
             <div>
               <label htmlFor="leaveStartDate" className="block text-sm text-gray-500">育休開始日</label>
               <input
@@ -90,16 +90,16 @@ export default function InputForm({ mode, onSubmit }: Props) {
                 className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
               />
             </div>
-          </div>
-          <div>
-            <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
-            <input
-              id="leaveEndDate"
-              type="date"
-              value={leaveEndDate}
-              onChange={e => setLeaveEndDate(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
-            />
+            <div>
+              <label htmlFor="leaveEndDate" className="block text-sm text-gray-500">育休終了予定日</label>
+              <input
+                id="leaveEndDate"
+                type="date"
+                value={leaveEndDate}
+                onChange={e => setLeaveEndDate(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base outline-none"
+              />
+            </div>
           </div>
         </div>
       )}

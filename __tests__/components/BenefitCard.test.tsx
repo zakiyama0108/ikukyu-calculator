@@ -29,6 +29,12 @@ describe('BenefitCard', () => {
     expect(screen.getByText('休業前賃金の67%')).toBeDefined()
   })
 
+  it('bonusAmount がある場合、ヘッダー金額が amount + bonusAmount の合計を表示すること', () => {
+    render(<BenefitCard benefit={childcare67WithBonus} />)
+    // 1,286,280 + 38,808 = 1,325,088
+    expect(screen.getByText('1,325,088円')).toBeDefined()
+  })
+
   it('bonusAmount がある場合に上乗せ額（+13%）の内訳が表示されること', () => {
     render(<BenefitCard benefit={childcare67WithBonus} />)
     expect(screen.getByText(/38,808/)).toBeDefined()
