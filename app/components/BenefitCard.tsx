@@ -36,7 +36,7 @@ export default function BenefitCard({ benefit, isNotApplicable = false }: Props)
           {badge}
         </span>
         <span className="flex-1 text-sm font-medium text-gray-800">{officialName}</span>
-        <span className="text-base font-bold">{amount.toLocaleString()}円</span>
+        <span className="text-base font-bold">{(amount + (bonusAmount ?? 0)).toLocaleString()}円</span>
       </div>
 
       {/* 財源バッジ */}
