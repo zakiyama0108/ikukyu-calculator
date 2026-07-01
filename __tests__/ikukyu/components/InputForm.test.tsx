@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import InputForm from '../../app/components/InputForm'
+import InputForm from '../../../app/ikukyu/components/InputForm'
 
 describe('InputForm', () => {
   it('ママ: 月給・出産予定日・育休終了予定日を入力して送信すると CalculatorInput が返ること', () => {

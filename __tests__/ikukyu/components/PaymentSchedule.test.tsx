@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import PaymentScheduleList from '../../app/components/PaymentSchedule'
-import type { PaymentSchedule } from '../../app/lib/types'
+import PaymentScheduleList from '../../../app/ikukyu/components/PaymentSchedule'
+import type { PaymentSchedule } from '../../../app/ikukyu/lib/types'
 
 const schedules: PaymentSchedule[] = [
   {

@@ -11,7 +11,10 @@
       "Bash(npx vercel *)",
       "Bash(git stash *)",
       "Bash(gh api *)",
-      "Bash(vercel ls *)"
+      "Bash(vercel ls *)",
+      "Bash(xargs sed -i '' \"s|'../../app/components/|'../../app/ikukyu/components/|g\")",
+      "Bash(xargs sed -i '' \"s|'../../app/lib/|'../../app/ikukyu/lib/|g\")",
+      "Bash(xargs sed -i '' \"s|'../../app/ikukyu/|'../../../app/ikukyu/|g\")"
     ]
   }
 }

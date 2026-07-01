@@ -6,7 +6,7 @@ import {
   getPapaPaternityLeaveEndDate,
   getPapaLeaveStartDate,
   splitIntoTwoMonthBlocks,
-} from '../../app/lib/dateUtils'
+} from '../../../app/ikukyu/lib/dateUtils'
 
 // 産前42日 = 出産予定日を含む42日間なので「dueDate - 41日」で開始日を算出する
 describe('産前開始日 (dueDate - 41日)', () => {

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import ModeToggle from '../../app/components/ModeToggle'
+import ModeToggle from '../../../app/ikukyu/components/ModeToggle'
 
 describe('ModeToggle', () => {
   it('パパタブをクリックすると onChange("papa") が呼ばれること', () => {

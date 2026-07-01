@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { calcSummaryLabel, calcBreakdownBar, calcPaymentSchedules } from '../../app/lib/calculator'
-import type { BenefitItem } from '../../app/lib/types'
+import { calcSummaryLabel, calcBreakdownBar, calcPaymentSchedules } from '../../../app/ikukyu/lib/calculator'
+import type { BenefitItem } from '../../../app/ikukyu/lib/types'
 
 describe('summaryLabel 生成', () => {
   it('mode: mama → "出産手当金 + 育児休業給付金の合計"', () => {

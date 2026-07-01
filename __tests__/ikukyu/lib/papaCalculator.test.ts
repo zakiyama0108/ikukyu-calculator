@@ -3,7 +3,7 @@ import {
   calcPaternityBenefit,
   calcPapaChildcare67,
   calcPapaChildcare50,
-} from '../../app/lib/calculator'
+} from '../../../app/ikukyu/lib/calculator'
 
 // leaveStartDate='2026-11-01', paternityDays=28 の各基準日:
 //   産後パパ育休終了日 = leaveStartDate + 27日 = '2026-11-28'

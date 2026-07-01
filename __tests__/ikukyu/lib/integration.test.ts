@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calcResult } from '../../app/lib/calculator'
+import { calcResult } from '../../../app/ikukyu/lib/calculator'
 
 // Section 8 総合確認 — calcResult を通じてエッジケースを検証する
 

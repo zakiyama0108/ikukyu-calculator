@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import BenefitCard from '../../app/components/BenefitCard'
-import type { BenefitItem } from '../../app/lib/types'
+import BenefitCard from '../../../app/ikukyu/components/BenefitCard'
+import type { BenefitItem } from '../../../app/ikukyu/lib/types'
 
 const childcare67: BenefitItem = {
   type: 'childcare67',

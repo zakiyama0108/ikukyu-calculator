@@ -3,7 +3,7 @@ import {
   calcMaternityBenefit,
   calcMamaChildcare67,
   calcMamaChildcare50,
-} from '../../app/lib/calculator'
+} from '../../../app/ikukyu/lib/calculator'
 
 // 出産手当金の日額 = floor(monthlySalary / 30 * 2/3)
 // 上限日額 = 30,887円（標準報酬月額上限 139万円 ÷ 30 × 2/3 の定数）

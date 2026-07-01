@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import ResultSummary from '../../app/components/ResultSummary'
-import type { CalculatorResult } from '../../app/lib/types'
+import ResultSummary from '../../../app/ikukyu/components/ResultSummary'
+import type { CalculatorResult } from '../../../app/ikukyu/lib/types'
 
 const result: CalculatorResult = {
   totalAmount: 2000000,
