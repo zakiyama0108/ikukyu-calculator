@@ -1,5 +1,23 @@
 # 開発ワークフロー
-新しい機能を作る時は先に `specs/<feature>/` に以下の順で仕様を作成してからコードを書く。
+新しい機能を作る時は先に `specs/<アプリ名>/<機能名>/` に以下の順で仕様を作成してからコードを書く。
+
+```
+specs/
+  ikukyu/             ← アプリ名
+    simulator/        ← 機能名
+      requirements.md
+      design.md
+      tasks.md
+    hub-site/         ← 機能名
+      requirements.md
+      design.md
+      tasks.md
+  kakeibo/            ← 別のアプリ（将来）
+    ...
+```
+
+アプリ名は URL のパス名と対応させる（例: `/ikukyu` → `specs/ikukyu/`）。
+機能名はその機能を端的に表す英語のスラッグ（例: `papa-birth-date`, `hub-site`）。
 
 - **Step1 requirements.md（要件定義）**
   「何を作るか（WHAT）」「なぜ作るか（WHY）」を言語化する。技術的な実装方法（HOW）はここでは書かない。

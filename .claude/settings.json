@@ -4,7 +4,14 @@
       "Bash(git commit -m ' *)",
       "Bash(gh pr create --title 'feat\\(output\\): 共通出力データ生成のRed/Green/Refactorフェーズ完了' --body ' *)",
       "Bash(xargs cat)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(gh pr create --title 'feat\\(components\\): コンポーネントのRed/Green/Refactorフェーズ完了' --body ' *)",
+      "Bash(gh run *)",
+      "Bash(gh pr *)",
+      "Bash(npx vercel *)",
+      "Bash(git stash *)",
+      "Bash(gh api *)",
+      "Bash(vercel ls *)"
     ]
   }
 }
