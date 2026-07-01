@@ -44,8 +44,35 @@ specs/
 - 実装は `feature/<機能名>` ブランチで行い、PRを作成してGitHub UI上で差分を確認・承認してからmainにマージする
 - PRを出す前にCI/CDが通っていることを確認する。CI/CDがない場合はVercelのデプロイ成功を `gh pr checks <PR番号>` で確認する。失敗している場合は原因を調査して修正し、再プッシュして再確認してからPRを出す
 
+# フォルダ構成
+
+コードとテストはアプリ単位で階層を分ける。
+
+```
+app/
+  layout.tsx              # サイト共通レイアウト
+  page.tsx                # ハブトップページ
+  components/             # サイト共通コンポーネント（Footer等）
+  <アプリ名>/             # アプリごとのフォルダ（URL パスと対応）
+    layout.tsx            # アプリ専用メタ情報
+    page.tsx              # ページ
+    components/           # アプリ専用UIコンポーネント
+    lib/                  # アプリ専用ロジック・型定義
+  legal/
+    page.tsx
+
+__tests__/
+  <アプリ名>/
+    components/
+    lib/
+```
+
+- サイト共通のものは `app/components/`（Footer等）
+- アプリ固有のコンポーネント・ロジックは `app/<アプリ名>/components/`・`app/<アプリ名>/lib/` に置く
+- テストも同じ階層に対応させる（`__tests__/<アプリ名>/components/`・`__tests__/<アプリ名>/lib/`）
+- 新しいアプリを追加するときは `app/<アプリ名>/` と `__tests__/<アプリ名>/` を並べるだけでよい
+
 # コーディング規約
-- コンポーネントはapp/配下に作成
 - 型定義は必ず行う
 - console.logは残さない
 
