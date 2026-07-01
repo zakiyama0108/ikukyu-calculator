@@ -3,12 +3,14 @@
 
 ```
 specs/
-  ikukyu/             ← アプリ名
+  hub-site/           ← サイト全体に関わる構成（ルーティング・ブランド等）
+  legal/              ← 利用規約・プライバシーポリシー（requirements.md のみで可）
+  ikukyu/             ← アプリ名（URL パスと対応）
     simulator/        ← 機能名
       requirements.md
       design.md
       tasks.md
-    hub-site/         ← 機能名
+    papa-birth-date/  ← 機能名
       requirements.md
       design.md
       tasks.md
@@ -16,8 +18,10 @@ specs/
     ...
 ```
 
-アプリ名は URL のパス名と対応させる（例: `/ikukyu` → `specs/ikukyu/`）。
-機能名はその機能を端的に表す英語のスラッグ（例: `papa-birth-date`, `hub-site`）。
+- サイト全体に関わるもの（ルーティング・共通レイアウト・法的ページ等）は `specs/` 直下に置く
+- アプリ固有の機能は `specs/<アプリ名>/<機能名>/` に置く（アプリ名は URL パスと対応）
+- 機能名はその機能を端的に表す英語のスラッグ（例: `papa-birth-date`, `simulator`）
+- 変更頻度が低く設計が単純なものは `requirements.md` のみでも可
 
 - **Step1 requirements.md（要件定義）**
   「何を作るか（WHAT）」「なぜ作るか（WHY）」を言語化する。技術的な実装方法（HOW）はここでは書かない。
