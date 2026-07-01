@@ -1,65 +1,37 @@
-'use client'
+import type { Metadata } from 'next'
+import Link from 'next/link'
 
-import { useState } from 'react'
-import type { CalculatorInput, CalculatorResult } from './lib/types'
-import { calcResult } from './lib/calculator'
-import ModeToggle from './components/ModeToggle'
-import InputForm from './components/InputForm'
-import ResultSummary from './components/ResultSummary'
-import BenefitCard from './components/BenefitCard'
-import PaymentScheduleList from './components/PaymentSchedule'
+export const metadata: Metadata = {
+  title: 'ikukyu | 育休・出産のお金ツール',
+  description: '育休・出産に関するお金のことをサポートするツールを提供しています。',
+}
 
-const NOTICE_MAMA = '出産手当金・育児休業給付金はいずれも非課税です。所得税・住民税はかかりません。産休・育休中は社会保険料も原則免除されるため、表示額がそのまま手取りの目安になります。'
-const NOTICE_PAPA = '出生時育児休業給付金・育児休業給付金はいずれも非課税です。所得税・住民税はかかりません。育休中は社会保険料も原則免除されるため、表示額がそのまま手取りの目安になります。'
-
-export default function Page() {
-  const [mode, setMode] = useState<'mama' | 'papa'>('mama')
-  const [result, setResult] = useState<CalculatorResult | null>(null)
-
-  function handleModeChange(m: 'mama' | 'papa') {
-    setMode(m)
-    setResult(null)  // モード切替時に結果をリセット
-  }
-
-  function handleSubmit(input: CalculatorInput) {
-    setResult(calcResult(input))
-  }
-
+export default function HubPage() {
   return (
-    <div className="mx-auto max-w-md px-4 py-6 space-y-6">
+    <div className="mx-auto max-w-md px-4 py-12 space-y-10">
       {/* ヘッダー */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">出産・育休 給付金シミュレーター</h1>
-        <p className="mt-1 text-sm text-gray-500">産後から育休まで、もらえるお金が全部わかる</p>
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight">ikukyu</h1>
+        <p className="text-sm text-gray-500">育休・出産のお金をサポートするツール</p>
       </div>
 
-      {/* モード切替 */}
-      <ModeToggle mode={mode} onChange={handleModeChange} />
-
-      {/* 入力フォーム */}
-      <InputForm mode={mode} onSubmit={handleSubmit} />
-
-      {/* 結果エリア（計算後のみ表示） */}
-      {result && (
-        <>
-          <ResultSummary result={result} />
-
-          {/* 給付金カード */}
-          <div className="space-y-3">
-            {result.benefits.map((benefit, i) => (
-              <BenefitCard key={i} benefit={benefit} />
-            ))}
+      {/* ツールカード一覧 */}
+      <div className="space-y-4">
+        <Link
+          href="/ikukyu"
+          className="block rounded-2xl border border-gray-200 bg-white p-6 hover:border-orange-300 hover:shadow-sm transition-all"
+        >
+          <div className="flex items-start gap-4">
+            <span className="text-3xl">🧮</span>
+            <div>
+              <h2 className="text-base font-bold text-gray-900">育休給付金シミュレーター</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                産後から育休まで、もらえる給付金が全部わかる
+              </p>
+            </div>
           </div>
-
-          {/* 注意書き */}
-          <p className="rounded-xl bg-gray-50 p-4 text-xs text-gray-500 leading-relaxed">
-            {mode === 'mama' ? NOTICE_MAMA : NOTICE_PAPA}
-          </p>
-
-          {/* 振込スケジュール */}
-          <PaymentScheduleList schedules={result.paymentSchedules} />
-        </>
-      )}
+        </Link>
+      </div>
     </div>
   )
 }

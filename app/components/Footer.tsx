@@ -11,7 +11,7 @@ export default function Footer() {
           プライバシーポリシー
         </Link>
       </div>
-      <p>© 2025 育休給付金シミュレーター</p>
+      <p>© 2025 ikukyu</p>
     </footer>
   )
 }

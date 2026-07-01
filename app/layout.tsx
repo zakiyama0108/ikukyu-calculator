@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "出産・育休 給付金シミュレーター",
-  description: "産後から育休まで、もらえるお金が全部わかる給付金計算ツール",
+  title: "ikukyu | 育休・出産のお金ツール",
+  description: "育休・出産に関するお金のことをサポートするツールを提供しています。",
 };
 
 export default function RootLayout({

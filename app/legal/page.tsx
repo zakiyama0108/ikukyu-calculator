@@ -11,7 +11,7 @@ export default function LegalPage() {
       {/* スティッキーヘッダー */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
         <nav className="mx-auto flex max-w-3xl items-center gap-6">
-          <Link href="/" className="text-sm font-medium text-blue-500 hover:underline">
+          <Link href="/ikukyu" className="text-sm font-medium text-blue-500 hover:underline">
             ← シミュレーターへ
           </Link>
           <a href="#terms" className="text-sm font-medium text-blue-500 hover:underline">
